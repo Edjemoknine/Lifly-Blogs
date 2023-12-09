@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaHamburger } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import { PiUserCircleGearFill } from "react-icons/pi";
-import { signOut } from "firebase/auth";
-import { auth } from "../firebase";
+import { MdMenu } from "react-icons/md";
 function Header({ user }) {
   const [open, setOpen] = useState(true);
   const location = useLocation();
+  const [term, setTerm] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,50 +16,56 @@ function Header({ user }) {
     setOpen(false);
   }, [location]);
 
-  const LogOut = async () => {
-    await signOut(auth);
-    navigate("/");
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setTerm("");
+    navigate(`/search/${term}`);
   };
 
   return (
-    <nav className="bg-blue-500 p-2 relative z-50">
-      <div className="container mx-auto  flex justify-between text-black text-xl items-center">
-        <Link to={"/"} className="font-semibold text-white text-2xl">
-          Lifly BLogs
+    <nav className=" text-black  shadow-md py-2 relative z-50 ">
+      <div className="container   md:px-6 mx-auto  flex justify-between h-12 text-black text-xl items-center gap-6">
+        <Link to={"/"} className="font-bold  text-black text-3xl font-caveat">
+          Latest
         </Link>
+        <form className=" relative" onSubmit={handleSubmit}>
+          <input
+            value={term}
+            onChange={(e) => setTerm(e.target.value)}
+            className="w-full bg-slate-100 outline-none pr-4 pl-12 py-1 text-base rounded-full"
+            type="text"
+            placeholder="Search"
+          />
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 " />
+        </form>
+
         <ul
           className={`${
             open
-              ? "flex shadow-lg text-white transition-all duration-300 absolute top-[110%]  right-4 bg-blue-400 w-96 h-96 gap-6 rounded-lg p-16 flex-col justify-start items-center"
-              : "hidden  text-white absolute top-[110%]  transition-all duration-300 -right-full bg-blue-400 w-96 h-96 gap-6 rounded-lg p-16 flex-col justify-start items-center"
-          } md:flex md:flex-row md:relative md:top-0 md:h-0 md:right-0 md:bg-inherit md:w-auto md:p-6`}
+              ? "flex shadow-lg text-black  duration-300 absolute top-[110%]  right-4 bg-blue-400 w-60 h-60 gap-6 rounded-lg p-16 flex-col justify-start items-center"
+              : " absolute -right-full duration-300 top-[110%]  bg-blue-400 w-60 h-60 rounded-lg"
+          } md:flex md:flex-row md:items-center  md:relative md:top-0 md:h-0 md:right-0 md:bg-inherit md:w-auto md:p-6`}
         >
           <li className={location.pathname === "/" ? "active" : ""}>
             <Link to={"/"} className="text-sm">
               Home
             </Link>
           </li>
-          <li className={location.pathname === "/create" ? "active" : ""}>
-            <Link to={"/create"} className="text-sm">
-              Create
-            </Link>
-          </li>
+
           <li className={location.pathname === "/about" ? "active" : ""}>
             <Link to={"/about"} className="text-sm">
               About
             </Link>
           </li>
           {user?.displayName ? (
-            <div className="flex gap-4 md:flex-row items-center flex-col">
-              <li onClick={LogOut} className="text-sm cursor-pointer">
-                LogOut
-              </li>
-              <div className=" flex md:flex-row md:gap-2 justify-center flex-col items-center ">
-                <PiUserCircleGearFill className="text-4xl" />
-                <span className="text-sm">{user?.displayName}</span>
-              </div>
-            </div>
+            <Link
+              to={"/profile"}
+              className=" flex md:flex-row md:gap-2 justify-center flex-col items-center "
+            >
+              <PiUserCircleGearFill className="text-4xl" />
+            </Link>
           ) : (
+            // </div>
             <li
               className={
                 location.pathname === "/auth"
@@ -72,9 +78,9 @@ function Header({ user }) {
           )}
         </ul>
 
-        <FaHamburger
+        <MdMenu
           onClick={() => setOpen(!open)}
-          className="text-white text-3xl  cursor-pointer md:hidden"
+          className="text-black text-3xl  cursor-pointer md:hidden"
         />
       </div>
     </nav>

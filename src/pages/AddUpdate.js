@@ -7,7 +7,6 @@ import {
   collection,
   doc,
   getDoc,
-  onSnapshot,
   serverTimestamp,
   updateDoc,
   // updateDoc,
@@ -27,6 +26,10 @@ const categoryOption = [
   "Sports",
   "Entertainment",
   "Business",
+  "History",
+  "Health",
+  "Education",
+  "Finance",
 ];
 const AddUpdate = ({ user }) => {
   const [state, setState] = useState(inialState);
@@ -56,22 +59,8 @@ const AddUpdate = ({ user }) => {
           const progress =
             (onSnapshot.bytesTransferred / onSnapshot.totalBytes) * 100;
           setProgress(progress);
-
-          switch (onSnapshot.state) {
-            case "paused":
-              console.log("Upload Is Paused");
-              break;
-            case "running":
-              console.log("Upload Is Running");
-              break;
-
-            default:
-              break;
-          }
         },
-        (error) => {
-          console.log(error);
-        },
+
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
             toast.success("Image Has Been Uploaded Successfuly");
@@ -135,7 +124,7 @@ const AddUpdate = ({ user }) => {
     id && getDetailsForUpdate();
   }, [id]);
 
-  //1--Bring All Data Inform to Update-----------
+  //1--Bring All Data In form to Update-----------
   const getDetailsForUpdate = async () => {
     const docRef = doc(db, "blogs", id);
 
@@ -146,14 +135,20 @@ const AddUpdate = ({ user }) => {
   };
 
   return (
-    <div className="container mx-auto flex justify-center items-center">
-      <div className=" w-full mt-8 pt-6 max-w-[500px] min-h-[450px] text-center flex justify-center flex-col items-center border ">
+    <div
+      style={{
+        backgroundImage:
+          "url(https://images.unsplash.com/uploads/141103282695035fa1380/95cdfeef?q=80&w=1130&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)",
+      }}
+      className=" min-h-[95vh] pb-6 bg-red-300 bg-no-repeat bg-cover  flex justify-center items-center"
+    >
+      <div className=" w-full bg-white/90 mt-8 pt-4 rounded-lg max-w-[500px] min-h-[450px] text-center flex justify-center flex-col items-center border ">
         <div className="title">
           <h2 className="text-3xl font-semibold">
             {id ? "Update Blog" : "Create Blog"}
           </h2>
         </div>
-        <div className="w-full p-6">
+        <div className="w-full px-6 py-3">
           <form className="  w-full" onSubmit={handleSubmit}>
             {/* <div className="flex justify-between"> */}
             <div className="input-field mb-5 flex flex-col text-left gap-3">
@@ -166,16 +161,18 @@ const AddUpdate = ({ user }) => {
                 onChange={handleChange}
               ></input>
             </div>
-            <div className="input-field mb-5 border p-2 flex flex-col text-left gap-3">
+            <div className="input-field flex rounded-lg mb-3 border p-2  text-left gap-3">
               <ReactTagInput
                 tags={tags}
                 placeholder="Tags"
                 onChange={handleTags}
+                inline={true}
+                inputFieldPosition="inline"
               />
             </div>
             {/* </div> */}
 
-            <div className="input-field mb-5 flex gap-16">
+            <div className="input-field mb-3 flex gap-16">
               <p>Is it trending blog ?</p>
               <div className="flex items-center gap-2 justify-center">
                 <input
@@ -203,8 +200,12 @@ const AddUpdate = ({ user }) => {
               </div>
             </div>
 
-            <div className="input-field border p-3 mb-4 flex flex-col text-left gap-3">
-              <select onChange={handleCategory} value={category}>
+            <div className="input-field border rounded-lg  mb-3 flex flex-col text-left gap-3">
+              <select
+                onChange={handleCategory}
+                value={category}
+                className="px-3 py-1.5 rounded-lg outline-none"
+              >
                 <option value={"choose"}>Please Select Category</option>
                 {categoryOption.map((cate, index) => {
                   return (
@@ -216,9 +217,9 @@ const AddUpdate = ({ user }) => {
               </select>
             </div>
 
-            <div className="input-field mb-4 flex flex-col text-left gap-3">
+            <div className="input-field mb-3 flex flex-col text-left gap-3">
               <textarea
-                className="w-full h-20 p-3 border resize-x"
+                className="w-full bg-gray-100 rounded-lg h-20 px-3 py-1.5 border resize-x"
                 onChange={handleChange}
                 value={description}
                 placeholder="Description"
@@ -238,8 +239,8 @@ const AddUpdate = ({ user }) => {
                 disabled={progress !== null && progress < 100}
                 className={
                   progress !== null && progress < 100
-                    ? "bg-blue-500 mt-3 rounded transition duration-300 hover:bg-gray-400 text-white p-3 mb-3"
-                    : "bg-blue-500 mt-3 rounded transition duration-300 hover:bg-blue-600 text-white p-3 mb-3 cursor-pointer"
+                    ? "bg-blue-500 mt-3 rounded transition duration-300 hover:bg-gray-400 text-white py-1.5 px-3 mb-3"
+                    : "bg-blue-500 mt-3 rounded transition duration-300 hover:bg-blue-600 text-white py-1.5 px-3 mb-3 cursor-pointer"
                 }
                 type="submit"
               >

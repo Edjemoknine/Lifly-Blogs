@@ -1,15 +1,5 @@
-import {
-  QuerySnapshot,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  onSnapshot,
-  query,
-  where,
-} from "firebase/firestore";
-import React, { useEffect, useState } from "react";
-import { db } from "../firebase";
+import React, { useContext } from "react";
+
 import BlogSection from "../components/BlogSection";
 import { PacmanLoader } from "react-spinners";
 import Tags from "../components/Tags";
@@ -17,44 +7,11 @@ import MostPopular from "../components/MostPopular";
 import Trending from "../components/Trending";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
+import nautre from "../images/nature.jpg";
+import { FaFacebook, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
+import { BlogsContext } from "../context/BlogContext";
 const Home = ({ user }) => {
-  const [blogs, setBlogs] = useState([]);
-  const [tags, setTags] = useState([]);
-  const [trend, setTranding] = useState([]);
-
-  // get all blogs
-  useEffect(() => {
-    GetTrandingBlogs();
-    const q = query(collection(db, "blogs"));
-    const unsubscribe = onSnapshot(q, (QuerySnapshot) => {
-      let arrBlogs = [];
-      let arrTags = [];
-      QuerySnapshot.forEach((doc) => {
-        arrTags.push(...doc.get("tags"));
-        arrBlogs = [...arrBlogs, { ...doc.data(), id: doc.id }];
-      });
-      setBlogs(arrBlogs);
-      setTags([...new Set(arrTags)]);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // delete Blog
-  const deleteBlog = async (id) => {
-    await deleteDoc(doc(db, "blogs", id));
-  };
-  // Gert Tranding Blogs
-  const GetTrandingBlogs = async () => {
-    const TrndRef = collection(db, "blogs");
-    const TrendQuery = query(TrndRef, where("trending", "==", "yes"));
-    const querySnapshot = await getDocs(TrendQuery);
-    let TrendingArr = [];
-    querySnapshot.docs.map((blog) => {
-      return TrendingArr.push({ id: blog.id, ...blog.data() });
-    });
-    setTranding(TrendingArr);
-  };
+  const { blogs, tags, trend, deleteBlog } = useContext(BlogsContext);
 
   if (blogs.length <= 0) {
     return (
@@ -68,24 +25,75 @@ const Home = ({ user }) => {
   }
 
   return (
-    <div className="container mx-auto">
-      <div className="trending">
-        <Trending blogs={trend} />
-      </div>
-      <div className="grid md:grid-cols-3 gap-4 grid-cols-1">
-        <div className="col-span-2">
-          <BlogSection user={user} blogs={blogs} deleteBlog={deleteBlog} />
-        </div>
-        <div className="col-span-1">
-          <div>
-            <Tags blogs={blogs} tags={tags} />
+    <>
+      <div className="container mx-auto pb-6">
+        <div className="relative  mt-6 overflow-hidden rounded-xl mx-auto h-[400px]">
+          <div className="absolute top-0 z-10 left-0 w-full h-full bg-black/40"></div>
+          <img
+            className="w-full h-full z-10 object-cover"
+            src={nautre}
+            alt=""
+          />
+          <div className="absolute w-full z-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ">
+            <h1 className="text-7xl leading-none text-center text-white font-bold font-caveat">
+              Share Stories <br className="hidden md:flex" /> and{" "}
+              <br className="hidden md:flex" /> Discover the last News
+            </h1>
           </div>
-          <div>
-            <MostPopular blogs={blogs} />
+        </div>
+        <div className="trending">
+          <Trending blogs={trend} />
+        </div>
+        <div className="grid md:grid-cols-3 gap-4 grid-cols-1">
+          <div className="col-span-2">
+            <BlogSection user={user} blogs={blogs} deleteBlog={deleteBlog} />
+          </div>
+          <div className="col-span-1">
+            <div>
+              <MostPopular blogs={blogs} />
+            </div>
+            <div>
+              <Tags blogs={blogs} tags={tags} />
+            </div>
+            <div>
+              <h3 className="text-2xl font-semibold my-3 mb-6">
+                Subscribe and Follow
+              </h3>
+              <div className="flex flex-col gap-3 items-center">
+                <div className="flex items-center w-full justify-between text-white px-4 rounded-lg py-2 bg-blue-800">
+                  <p>
+                    Facebook
+                    <span>5.3K</span>
+                  </p>
+                  <FaFacebook />
+                </div>
+                <div className="flex items-center w-full justify-between text-white px-4 rounded-lg py-2 bg-sky-500">
+                  <p>
+                    Twitter
+                    <span>63K</span>
+                  </p>
+                  <FaTwitter />
+                </div>
+                <div className="flex items-center w-full justify-between text-white px-4 rounded-lg py-2 bg-blue-900">
+                  <p>
+                    Instagram
+                    <span>1M</span>
+                  </p>
+                  <FaInstagram />
+                </div>
+                <div className="flex items-center w-full justify-between text-white px-4 rounded-lg py-2 bg-red-500">
+                  <p>
+                    YouTube
+                    <span>2M</span>
+                  </p>
+                  <FaYoutube />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

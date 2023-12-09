@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { BsTrash3 } from "react-icons/bs";
 import { FcEditImage } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import Category from "./Category";
 function BlogSection({ blogs, user, deleteBlog, editBlog }) {
   // sweet alaert
   const userUid = user?.uid;
-
+  const [max, setMax] = useState(6);
   const handleDelete = (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -25,31 +26,33 @@ function BlogSection({ blogs, user, deleteBlog, editBlog }) {
   };
 
   return (
-    <div className="container mx-auto">
-      <h1 className="text-start text-lg p-2 mb-4 border-b-2 border-black">
-        Daily Blogs
-      </h1>
+    <div className="">
+      <div className="py-2 my-6">
+        <h3 className=" text-3xl font-semibold ">Selected Posts</h3>
+        <p className="text-zinc-500 text-sm">EDITOR'S PICKS</p>
+      </div>
       <div className="">
-        {blogs.map((item) => {
+        {blogs?.slice(0, max).map((item) => {
           return (
-            <div key={item.id} className="shadow-lg flex mb-4  min-h-52">
-              <div className=" overflow-hidden w-80  bg-blue-500">
+            <div
+              key={item.id}
+              className="rounded-lg overflow-hidden flex-col md:flex-row shadow-lg flex mb-4  min-h-52"
+            >
+              <div className=" overflow-hidden md:w-80 md:hf h-60 w-full  bg-blue-500">
                 <img
-                  className="w-full h-full hover:scale-105 transition duration-500 object-fill"
+                  className="w-full h-full hover:scale-105 transition duration-500 object-cover"
                   src={item.imgUrl}
                   alt={item.title}
                 />
               </div>
-              <div className="info p-4 w-full flex flex-col justify-between">
-                <h6 className="bg-blue-500 p-1 rounded w-fit text-xs text-white">
-                  {item.category}
-                </h6>
+              <div className="info flex-1 p-4 w-full flex flex-col justify-between">
+                <Category cat={item.category} />
                 <span className=" text-xl">{item.title}</span>
                 <span>
                   <p className="font-semibold text-gray-400">{item.author}</p>
                   {/* {item.timestamp} */}
                 </span>
-                <div>{item.description}</div>
+                <div>{item.description.substring(0, 100)} ...</div>
                 <div className="flex justify-between mt-2 items-end">
                   <Link
                     to={`/details/${item.id}`}
@@ -76,6 +79,16 @@ function BlogSection({ blogs, user, deleteBlog, editBlog }) {
           );
         })}
       </div>
+      {blogs?.length > 6 && (
+        <div className=" grid place-items-center">
+          <button
+            onClick={() => setMax((prev) => prev + 6)}
+            className="bg-slate-600 mt-3  mb-10 p-2 text-white text-sm"
+          >
+            Read more
+          </button>
+        </div>
+      )}
     </div>
   );
 }

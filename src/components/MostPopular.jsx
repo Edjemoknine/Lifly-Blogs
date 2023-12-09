@@ -5,9 +5,7 @@ const MostPopular = ({ blogs }) => {
   const navigate = useNavigate();
   return (
     <div>
-      <h2 className="text-start text-lg border-b-2 border-black my-2 mb-6 py-2">
-        Most Popular
-      </h2>
+      <h3 className="text-2xl font-semibold my-3 mb-6">Most Populair</h3>
       {blogs.map((item) => {
         return (
           <div
@@ -15,12 +13,18 @@ const MostPopular = ({ blogs }) => {
             className="flex mb-4 gap-4 items-start cursor-pointer"
             onClick={() => navigate(`/details/${item.id}`)}
           >
-            <div className="img w-28 overflow-hidden rounded">
-              <img src={item.imgUrl} alt={item.title} />
+            <div className="w-28 h-20  overflow-hidden rounded">
+              <img
+                className="w-28 h-full  object-cover"
+                src={item.imgUrl}
+                alt={item.title}
+              />
             </div>
-            <div className="info">
-              <h3>{item.title}</h3>
-              <p>{item.trending}</p>
+            <div className="flex-1">
+              <h3 className="text-sm">{item.title.substring(0, 25)}</h3>
+              <p className="bg-sky-500 px-1 w-fit text-xs text-white mt-1 rounded">
+                {item.trending === "yes" ? "trending" : ""}
+              </p>
             </div>
           </div>
         );

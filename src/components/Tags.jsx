@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Tags = ({ blogs, tags }) => {
   //   let MostTags = [];
@@ -12,16 +13,17 @@ const Tags = ({ blogs, tags }) => {
     <div>
       <div>
         <div className="mb-4 py-2 text-start">
-          <h1 className="text-lg mb-2 pb-2 border-b-2 border-black">Tags</h1>
+          <h3 className="text-2xl font-semibold my-3 mb-6">Tags</h3>
           <div className="flex flex-wrap">
             {tags.map((tag, index) => {
               return (
-                <div
+                <Link
+                  to={`/search/${tag}`}
                   key={index}
                   className="bg-slate-400 cursor-pointer hover:bg-slate-500 p-2 w-fit text-white text-sm m-1"
                 >
                   {tag}
-                </div>
+                </Link>
               );
             })}
           </div>
